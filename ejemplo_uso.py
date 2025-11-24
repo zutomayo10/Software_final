@@ -1,26 +1,18 @@
-"""
-Script de ejemplo para uso programático del sistema CS-GradeCalculator.
-Este script muestra cómo usar el sistema sin la interfaz de terminal,
-útil para integración con otros sistemas o pruebas automatizadas.
-"""
 from models import Student, Teacher, Evaluation
 from services import GradeCalculator
 from utils.exceptions import GradeCalculationError
 def ejemplo_uso_basico():
-    """Ejemplo básico de uso del sistema."""
+    
     print("=" * 70)
-    print("EJEMPLO DE USO PROGRAMÁTICO - CS-GRADECALCULATOR")
+    print("CS-GRADECALCULATOR")
     print("=" * 70)
-    # 1. Crear docente y calculadora
     print("\n1. Creando docente...")
     docente = Teacher("T001", "Dr. Carlos Ruiz")
     calculadora = GradeCalculator(docente)
     print(f"    Docente: {docente.name}")
-    # 2. Crear estudiante
     print("\n2. Creando estudiante...")
     estudiante = Student("202110123", "Ana Torres")
     print(f"    Estudiante: {estudiante.name}")
-    # 3. Crear y registrar evaluaciones
     print("\n3. Registrando evaluaciones...")
     evaluaciones = [
         Evaluation("Examen Parcial 1", 14.5, 25.0),
@@ -30,18 +22,15 @@ def ejemplo_uso_basico():
     ]
     resultado = calculadora.register_evaluations(estudiante, evaluaciones)
     print(f"    Evaluaciones registradas: {resultado['evaluations_added']}")
-    # 4. Registrar asistencia
     print("\n4. Registrando asistencia...")
     resultado = calculadora.register_attendance(estudiante, True)
     print(f"    {resultado['message']}")
-    # 5. Configurar política de puntos extra
     print("\n5. Configurando política de puntos extra...")
     resultado = calculadora.register_extra_points_policy(
         teachers_agree=True,
         teachers_list=["T001", "T002", "T003"]
     )
     print(f"    {resultado['message']}")
-    # 6. Calcular nota final
     print("\n6. Calculando nota final...")
     resultado = calculadora.calculate_final_grade(estudiante, extra_points=1.0)
     print(f"\n   RESULTADO:")
@@ -50,7 +39,6 @@ def ejemplo_uso_basico():
     print(f"   - NOTA FINAL: {resultado['final_grade']}")
     print(f"   - Estado: {' APROBADO' if resultado['passes_course'] else ' DESAPROBADO'}")
     print(f"   - Tiempo: {resultado['calculation_time_ms']} ms")
-    # 7. Obtener detalle completo
     print("\n7. Obteniendo detalle del cálculo...")
     detalle = calculadora.get_calculation_detail(estudiante, extra_points=1.0)
     print(f"    Detalle generado")
@@ -61,7 +49,7 @@ def ejemplo_uso_basico():
     print(" EJEMPLO COMPLETADO EXITOSAMENTE")
     print("=" * 70)
 def ejemplo_sin_asistencia():
-    """Ejemplo con estudiante sin asistencia mínima."""
+    
     print("\n" + "=" * 70)
     print("EJEMPLO: ESTUDIANTE SIN ASISTENCIA MÍNIMA")
     print("=" * 70)
@@ -74,7 +62,6 @@ def ejemplo_sin_asistencia():
         Evaluation("Trabajos", 18.0, 20.0)
     ]
     calculadora.register_evaluations(estudiante, evaluaciones)
-    # NO cumple asistencia mínima
     calculadora.register_attendance(estudiante, False)
     calculadora.register_extra_points_policy(True)
     resultado = calculadora.calculate_final_grade(estudiante, extra_points=1.5)
@@ -87,26 +74,24 @@ def ejemplo_sin_asistencia():
     print("\nNOTA: Sin asistencia mínima, no se aprueban puntos extra y no se aprueba el curso.")
     print("=" * 70)
 def ejemplo_manejo_errores():
-    """Ejemplo de manejo de errores."""
+    
     print("\n" + "=" * 70)
     print("EJEMPLO: MANEJO DE ERRORES")
     print("=" * 70)
     docente = Teacher("T003", "Dr. Luis Vargas")
     calculadora = GradeCalculator(docente)
     estudiante = Student("202110789", "Laura Ramírez")
-    # Intentar calcular sin evaluaciones
     print("\n1. Intentando calcular nota sin evaluaciones...")
     try:
         resultado = calculadora.calculate_final_grade(estudiante)
         print("    No debería llegar aquí")
     except GradeCalculationError as e:
         print(f"    Error capturado correctamente: {e}")
-    # Intentar agregar evaluaciones con pesos inválidos
     print("\n2. Intentando agregar evaluaciones con pesos que no suman 100%...")
     try:
         evaluaciones_invalidas = [
             Evaluation("Parcial", 15.0, 40.0),
-            Evaluation("Labs", 18.0, 30.0)  # Total: 70% (no suma 100%)
+            Evaluation("Labs", 18.0, 30.0)
         ]
         calculadora.register_evaluations(estudiante, evaluaciones_invalidas)
         calculadora.register_attendance(estudiante, True)
@@ -114,7 +99,6 @@ def ejemplo_manejo_errores():
         print("    No debería llegar aquí")
     except Exception as e:
         print(f"    Error capturado correctamente: {e}")
-    # Intentar agregar más de 10 evaluaciones
     print("\n3. Intentando agregar más de 10 evaluaciones...")
     try:
         estudiante2 = Student("202110999", "Test Student")
@@ -130,7 +114,6 @@ def ejemplo_manejo_errores():
     print(" MANEJO DE ERRORES VERIFICADO")
     print("=" * 70)
 if __name__ == "__main__":
-    # Ejecutar ejemplos
     ejemplo_uso_basico()
     ejemplo_sin_asistencia()
     ejemplo_manejo_errores()

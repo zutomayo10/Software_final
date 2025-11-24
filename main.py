@@ -1,9 +1,3 @@
-"""
-Sistema CS-GradeCalculator
-Programa principal para demostrar todos los casos de uso del sistema.
-Este programa implementa el caso de uso CU001: Calcular nota final del estudiante
-y demuestra todos los requerimientos funcionales y no funcionales.
-"""
 import sys
 from typing import List, Optional
 from models import Student, Teacher, Evaluation
@@ -11,23 +5,20 @@ from services import GradeCalculator
 from policies import AttendancePolicy, ExtraPointsPolicy
 from utils.exceptions import GradeCalculationError
 class GradeCalculatorApp:
-    """
-    Aplicación principal del sistema de cálculo de notas.
-    Proporciona una interfaz de terminal para interactuar con el sistema.
-    """
+    
     def __init__(self):
-        """Inicializa la aplicación."""
+        
         self.calculator: Optional[GradeCalculator] = None
         self.students: dict = {}
         self.current_teacher: Optional[Teacher] = None
     def display_header(self) -> None:
-        """Muestra el encabezado de la aplicación."""
+        
         print("\n" + "=" * 70)
         print(" " * 15 + "CS-GRADECALCULATOR - UTEC")
         print(" " * 10 + "Sistema de Cálculo de Notas Finales")
         print("=" * 70)
     def display_menu(self) -> None:
-        """Muestra el menú principal."""
+        
         print("\n" + "-" * 70)
         print("MENÚ PRINCIPAL:")
         print("-" * 70)
@@ -43,7 +34,7 @@ class GradeCalculatorApp:
         print("0. Salir")
         print("-" * 70)
     def initialize_system(self) -> None:
-        """Inicializa el sistema registrando un docente."""
+        
         print("\n--- INICIALIZAR SISTEMA ---")
         teacher_id = input("Ingrese ID del docente: ").strip()
         teacher_name = input("Ingrese nombre del docente: ").strip()
@@ -55,7 +46,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error al inicializar sistema: {e}")
     def register_student(self) -> None:
-        """Registra un nuevo estudiante."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero (opción 1)")
             return
@@ -70,7 +61,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error al registrar estudiante: {e}")
     def register_evaluations(self) -> None:
-        """RF01: Registra evaluaciones para un estudiante."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero (opción 1)")
             return
@@ -105,11 +96,9 @@ class GradeCalculatorApp:
                 evaluations.append(evaluation)
                 total_weight += weight
                 print(f"   Evaluación agregada (peso acumulado: {total_weight}%)")
-            # Validar que suman 100%
             if abs(total_weight - 100.0) > 0.01:
                 print(f"\n Error: Los pesos suman {total_weight}%, deben sumar 100%")
                 return
-            # Registrar evaluaciones
             result = self.calculator.register_evaluations(student, evaluations)
             if result['success']:
                 print(f"\n Evaluaciones registradas correctamente")
@@ -123,7 +112,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error: {e}")
     def register_attendance(self) -> None:
-        """RF02: Registra si el estudiante cumplió con asistencia mínima."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero")
             return
@@ -148,7 +137,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error: {e}")
     def configure_extra_points_policy(self) -> None:
-        """RF03: Configura la política de puntos extra."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero")
             return
@@ -174,7 +163,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error: {e}")
     def calculate_grade(self) -> None:
-        """RF04: Calcula la nota final de un estudiante."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero")
             return
@@ -188,7 +177,6 @@ class GradeCalculatorApp:
             print(f"\n Error: Estudiante {student_id} no encontrado")
             return
         student = self.students[student_id]
-        # Validar que tiene evaluaciones
         if student.get_evaluation_count() == 0:
             print(f"\n Error: El estudiante no tiene evaluaciones registradas")
             return
@@ -213,7 +201,7 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error: {e}")
     def show_calculation_detail(self) -> None:
-        """RF05: Muestra el detalle completo del cálculo."""
+        
         if not self.calculator:
             print("\n Error: Debe inicializar el sistema primero")
             return
@@ -233,46 +221,38 @@ class GradeCalculatorApp:
         try:
             extra_points = float(input("Puntos extra a considerar (0 si no aplica): "))
             detail = self.calculator.get_calculation_detail(student, extra_points)
-            # Mostrar detalle completo
             print("\n" + "=" * 70)
             print("DETALLE COMPLETO DEL CÁLCULO")
             print("=" * 70)
-            # Información del estudiante
             print("\n1. INFORMACIÓN DEL ESTUDIANTE:")
             print(f"   ID: {detail['student_info']['id']}")
             print(f"   Nombre: {detail['student_info']['name']}")
             print(f"   Evaluaciones registradas: {detail['student_info']['evaluations_count']}")
-            # Detalle de evaluaciones
             print("\n2. EVALUACIONES:")
             for eval_detail in detail['evaluations_detail']:
                 print(f"\n   Evaluación {eval_detail['number']}: {eval_detail['name']}")
                 print(f"   - Nota: {eval_detail['score']}/20")
                 print(f"   - Peso: {eval_detail['weight']}%")
                 print(f"   - Contribución: {eval_detail['contribution']}")
-            # Cálculo base
             print("\n3. CÁLCULO BASE:")
             print(f"   Fórmula: {detail['base_calculation']['formula']}")
             print(f"   Peso total: {detail['base_calculation']['total_weight']}%")
             print(f"   Nota base: {detail['base_calculation']['base_grade']}")
-            # Asistencia
             print("\n4. ASISTENCIA:")
             print(f"   Cumple requisito: {' SÍ' if detail['attendance']['meets_requirement'] else ' NO'}")
             print(f"   Estado: {detail['attendance']['message']}")
             print(f"   Impacto: {detail['attendance']['impact']}")
-            # Puntos extra
             print("\n5. PUNTOS EXTRA:")
             print(f"   Solicitados: {detail['extra_points']['requested']}")
             print(f"   Aplicados: {detail['extra_points']['applied']}")
             print(f"   Docentes aprueban: {' SÍ' if detail['extra_points']['teachers_agree'] else ' NO'}")
             print(f"   Detalle: {detail['extra_points']['message']}")
-            # Resultado final
             print("\n6. RESULTADO FINAL:")
             print(f"   NOTA FINAL: {detail['final_result']['final_grade']}")
             print(f"   Umbral de aprobación: {detail['final_result']['approval_threshold']}")
             print(f"   Estado: {' APROBADO' if detail['final_result']['passes_course'] else ' DESAPROBADO'}")
             if detail['final_result']['grade_capped']:
                 print(f"   NOTA: Nota limitada a 20 (máximo permitido)")
-            # Metadata
             print("\n7. METADATA:")
             print(f"   Calculado por: {detail['metadata']['calculated_by']}")
             print(f"   ID Docente: {detail['metadata']['teacher_id']}")
@@ -284,35 +264,32 @@ class GradeCalculatorApp:
         except Exception as e:
             print(f"\n Error: {e}")
     def list_students(self) -> None:
-        """Muestra todos los estudiantes registrados."""
+        
         if not self.students:
             print("\n No hay estudiantes registrados")
             return
         print("\n--- ESTUDIANTES REGISTRADOS ---")
         self._list_students()
     def _list_students(self) -> None:
-        """Método auxiliar para listar estudiantes."""
+        
         for student_id, student in self.students.items():
             print(f"  - {student.name} (ID: {student_id}) - "
                   f"Evaluaciones: {student.get_evaluation_count()}, "
                   f"Asistencia: {'' if student.has_minimum_attendance else ''}")
     def run_complete_demo(self) -> None:
-        """Ejecuta un caso de uso completo demostrando todas las funcionalidades."""
+        
         print("\n" + "=" * 70)
         print("DEMO: CASO DE USO COMPLETO - CU001")
         print("=" * 70)
         try:
-            # 1. Inicializar sistema
             print("\n1. Inicializando sistema...")
             self.current_teacher = Teacher("T001", "Dr. Juan Pérez")
             self.calculator = GradeCalculator(self.current_teacher)
             print(f"    Docente registrado: {self.current_teacher.name}")
-            # 2. Crear estudiante
             print("\n2. Registrando estudiante...")
             student = Student("202110001", "María González")
             self.students[student.student_id] = student
             print(f"    Estudiante: {student.name}")
-            # 3. RF01: Registrar evaluaciones
             print("\n3. RF01: Registrando evaluaciones...")
             evaluations = [
                 Evaluation("Parcial 1", 15.0, 30.0),
@@ -324,16 +301,13 @@ class GradeCalculatorApp:
             print(f"    {result['evaluations_added']} evaluaciones registradas")
             for eval in evaluations:
                 print(f"     - {eval.name}: {eval.score}/20 (peso: {eval.weight}%)")
-            # 4. RF02: Registrar asistencia
             print("\n4. RF02: Registrando asistencia...")
             result = self.calculator.register_attendance(student, True)
             print(f"    {result['message']}")
-            # 5. RF03: Configurar política de puntos extra
             print("\n5. RF03: Configurando política de puntos extra...")
             teachers_list = ["T001", "T002", "T003"]
             result = self.calculator.register_extra_points_policy(True, teachers_list)
             print(f"    {result['message']}")
-            # 6. RF04: Calcular nota final
             print("\n6. RF04: Calculando nota final...")
             extra_points = 1.5
             result = self.calculator.calculate_final_grade(student, extra_points)
@@ -342,12 +316,10 @@ class GradeCalculatorApp:
             print(f"    NOTA FINAL: {result['final_grade']}")
             print(f"    Estado: {'APROBADO' if result['passes_course'] else 'DESAPROBADO'}")
             print(f"    Tiempo de cálculo: {result['calculation_time_ms']} ms (RNF04: < 300ms)")
-            # 7. RF05: Mostrar detalle
             print("\n7. RF05: Generando detalle del cálculo...")
             detail = self.calculator.get_calculation_detail(student, extra_points)
             print(f"    Detalle generado exitosamente")
             print(f"    Incluye: {len(detail['evaluations_detail'])} evaluaciones detalladas")
-            # Validaciones RNF
             print("\n8. VERIFICACIÓN DE REQUERIMIENTOS NO FUNCIONALES:")
             print(f"    RNF01: Evaluaciones registradas: {student.get_evaluation_count()}/10 (máximo)")
             print(f"    RNF02: Sistema preparado para concurrencia (hasta 50 usuarios)")
@@ -361,7 +333,7 @@ class GradeCalculatorApp:
             import traceback
             traceback.print_exc()
     def run(self) -> None:
-        """Ejecuta el bucle principal de la aplicación."""
+        
         self.display_header()
         while True:
             self.display_menu()
@@ -398,7 +370,7 @@ class GradeCalculatorApp:
                 import traceback
                 traceback.print_exc()
 def main():
-    """Función principal."""
+    
     app = GradeCalculatorApp()
     app.run()
 if __name__ == "__main__":

@@ -1,8 +1,3 @@
-"""
-Módulo de utilidades.
-Contiene clases y funciones de apoyo para el sistema.
-"""
-
 from .exceptions import (
     GradeCalculationError,
     InvalidEvaluationError,
